@@ -42,8 +42,9 @@ void test_modular_basic() {
   EXPECT_EQ(static_cast<T>(a), T(3));
   EXPECT_EQ(static_cast<Mod10>(T(15)).get(), T(5));
   // implicit conversions
-  EXPECT_EQ(a, 3);
-  EXPECT_EQ(Mod10(15), 5);
+  T x = a;
+  EXPECT_EQ(x, T(3));
+  EXPECT_EQ(Mod10{15}.get(), 5);
 
   // test arithmetics
   a = T(6), b = T(4);
@@ -71,6 +72,17 @@ TEST(ModularTest, Basic) {
   test_modular_basic<uint16_t>();
   test_modular_basic<uint32_t>();
   test_modular_basic<uint64_t>();
+}
+
+TEST(ModularTest, Operators) {
+  using Mod10 = Modular<10>;
+  Mod10 a = 7, b = 5;
+  EXPECT_EQ(a + b, 2);
+  EXPECT_EQ(a + 3, 0);
+  EXPECT_EQ(3 + a, 0);
+  a += b;
+  EXPECT_TRUE(IsModular<Mod10>);
+  EXPECT_FALSE(IsModular<int>);
 }
 
 }  // namespace number_theory

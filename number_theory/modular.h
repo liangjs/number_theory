@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include <bit>
+#include <concepts>
 #include <limits>
 #include <type_traits>
 
@@ -108,6 +109,60 @@ class Modular {
                   "Please use larger integer types.");
   }
 };
+
+namespace {
+
+// Tests if a class T is derived from Modular.
+template <class T>
+struct IsModularImpl {
+  template <auto mod,
+            std::enable_if_t<std::derived_from<T, Modular<mod>>, bool> = true>
+  static constexpr std::true_type test(const Modular<mod> *);
+
+  static constexpr std::false_type test(...);
+
+  static constexpr bool result = decltype(test(std::declval<T *>()))::value;
+};
+
+template <class T>
+concept IsModular = IsModularImpl<T>::result;
+
+}  // namespace
+
+// Overloads an arithmetic operator with a class method
+#define OVERLOAD_ARITHMETIC_OPERATOR(CONCEPT, OP, METHOD)    \
+  template <CONCEPT M>                                       \
+  M operator OP(const M &lhs, const M &rhs) {                \
+    return lhs.METHOD(rhs);                                  \
+  }                                                          \
+  template <CONCEPT M>                                       \
+  M operator OP(const M &lhs, const typename M::type &rhs) { \
+    return lhs.METHOD(M(rhs));                               \
+  }                                                          \
+  template <CONCEPT M>                                       \
+  M operator OP(const typename M::type &lhs, const M &rhs) { \
+    return M(lhs).METHOD(rhs);                               \
+  }
+
+// Overloads an inplace operator with a class method
+#define OVERLOAD_INPLACE_OPERATOR(CONCEPT, OP, METHOD) \
+  template <CONCEPT M>                                 \
+  M &operator OP(M &lhs, const M &rhs) {               \
+    lhs = lhs.METHOD(rhs);                             \
+    return lhs;                                        \
+  }
+
+OVERLOAD_ARITHMETIC_OPERATOR(IsModular, +, add)
+OVERLOAD_ARITHMETIC_OPERATOR(IsModular, -, subtract)
+OVERLOAD_ARITHMETIC_OPERATOR(IsModular, *, multiply)
+OVERLOAD_ARITHMETIC_OPERATOR(IsModular, ==, equal)
+
+OVERLOAD_INPLACE_OPERATOR(IsModular, +=, add)
+OVERLOAD_INPLACE_OPERATOR(IsModular, -=, subtract)
+OVERLOAD_INPLACE_OPERATOR(IsModular, *=, multiply)
+
+#undef OVERLOAD_ARITHMETIC_OPERATOR
+#undef OVERLOAD_UNPLACE_OPERATOR
 
 }  // namespace number_theory
 

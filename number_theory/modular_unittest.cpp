@@ -52,7 +52,7 @@ void test_modular_basic() {
   EXPECT_EQ(c.get(), T(0));
   c = b.negate();
   EXPECT_EQ(c.get(), T(6));
-  c = b.substract(a);
+  c = b.subtract(a);
   EXPECT_EQ(c.get(), T(8));
   c = a.multiply(b);
   EXPECT_EQ(c.get(), T(4));
@@ -74,15 +74,51 @@ TEST(ModularTest, Basic) {
   test_modular_basic<uint64_t>();
 }
 
-TEST(ModularTest, Operators) {
-  using Mod10 = Modular<10>;
+template <typename T>
+void test_modular_operators() {
+  using Mod10 = Modular<T(10)>;
+
+  // test addition
   Mod10 a = 7, b = 5;
   EXPECT_EQ(a + b, 2);
   EXPECT_EQ(a + 3, 0);
   EXPECT_EQ(3 + a, 0);
-  a += b;
-  EXPECT_TRUE(IsModular<Mod10>);
-  EXPECT_FALSE(IsModular<int>);
+  b += a;
+  EXPECT_EQ(b, 2);
+  a += 4;
+  EXPECT_EQ(a, 1);
+
+  // test subtraction
+  a = 7, b = 5;
+  EXPECT_EQ(b - a, 8);
+  EXPECT_EQ(a - 8, 9);
+  EXPECT_EQ(0 - a, 3);
+  b -= a;
+  EXPECT_EQ(b, 8);
+  a -= 10;
+  EXPECT_EQ(a, 7);
+
+  // test multiplication
+  a = 7, b = 5;
+  EXPECT_EQ(a * b, 5);
+  EXPECT_EQ(a * 2, 4);
+  EXPECT_EQ(3 * a, 1);
+  b *= a;
+  EXPECT_EQ(b, 5);
+  a *= 10;
+  EXPECT_EQ(a, 0);
+
+  // test comparison
+  EXPECT_EQ(Mod10(1), 11);
+  EXPECT_EQ(11, Mod10(1));
+  EXPECT_EQ(Mod10(1), Mod10(11));
+  EXPECT_NE(1, Mod10(3));
+  EXPECT_NE(Mod10(3), 1);
+  EXPECT_NE(Mod10(1), Mod10(3));
+}
+
+TEST(ModularTest, Operators) {
+  test_modular_operators<int16_t>();
 }
 
 }  // namespace number_theory

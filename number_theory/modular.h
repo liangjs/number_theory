@@ -83,7 +83,7 @@ class Modular {
     return Modular(modulus - value_);
   }
 
-  Modular substract(const Modular &rhs) const { return add(rhs.negate()); }
+  Modular subtract(const Modular &rhs) const { return add(rhs.negate()); }
 
   Modular multiply(const Modular &rhs) const {
     check_multiplication_overflow();
@@ -112,7 +112,7 @@ class Modular {
   }
 };
 
-namespace {
+namespace modular_internal {
 
 // Tests if a class T is derived from Modular.
 template <class T>
@@ -129,42 +129,55 @@ struct IsModularImpl {
 template <class T>
 concept IsModular = IsModularImpl<T>::result;
 
-}  // namespace
+}  // namespace modular_internal
 
 // Overloads an arithmetic operator with a class method
-#define OVERLOAD_ARITHMETIC_OPERATOR(CONCEPT, OP, METHOD)    \
-  template <CONCEPT M>                                       \
-  M operator OP(const M &lhs, const M &rhs) {                \
-    return lhs.METHOD(rhs);                                  \
-  }                                                          \
-  template <CONCEPT M>                                       \
-  M operator OP(const M &lhs, const typename M::type &rhs) { \
-    return lhs.METHOD(M(rhs));                               \
-  }                                                          \
-  template <CONCEPT M>                                       \
-  M operator OP(const typename M::type &lhs, const M &rhs) { \
-    return M(lhs).METHOD(rhs);                               \
+#define OVERLOAD_ARITHMETIC_OPERATOR(CONCEPT, OP, METHOD) \
+  template <CONCEPT M>                                    \
+  M operator OP(const M &lhs, const M &rhs) {             \
+    return lhs.METHOD(rhs);                               \
+  }                                                       \
+  template <CONCEPT M, std::convertible_to<M> T>          \
+  M operator OP(const M &lhs, const T &rhs) {             \
+    return lhs.METHOD(static_cast<M>(rhs));               \
+  }                                                       \
+  template <CONCEPT M, std::convertible_to<M> T>          \
+  M operator OP(const T &lhs, const M &rhs) {             \
+    return static_cast<M>(lhs).METHOD(rhs);               \
   }
 
 // Overloads an inplace operator with a class method
 #define OVERLOAD_INPLACE_OPERATOR(CONCEPT, OP, METHOD) \
-  template <CONCEPT M>                                 \
-  M &operator OP(M &lhs, const M &rhs) {               \
-    lhs = lhs.METHOD(rhs);                             \
+  template <CONCEPT M, std::convertible_to<M> T>       \
+  M &operator OP(M &lhs, const T &rhs) {               \
+    lhs = lhs.METHOD(static_cast<M>(rhs));             \
     return lhs;                                        \
   }
 
-OVERLOAD_ARITHMETIC_OPERATOR(IsModular, +, add)
-OVERLOAD_ARITHMETIC_OPERATOR(IsModular, -, subtract)
-OVERLOAD_ARITHMETIC_OPERATOR(IsModular, *, multiply)
-OVERLOAD_ARITHMETIC_OPERATOR(IsModular, ==, equal)
+// Overloads a comparison operator with a class method
+#define OVERLOAD_COMPARISON_OPERATOR(CONCEPT, OP, OP_NEG, METHOD) \
+  template <CONCEPT M, std::convertible_to<M> T>                  \
+  bool operator OP(M &lhs, const T &rhs) {                        \
+    return lhs.METHOD(static_cast<M>(rhs));                       \
+  }                                                               \
+  template <CONCEPT M, std::convertible_to<M> T>                  \
+  bool operator OP_NEG(M &lhs, const T &rhs) {                    \
+    return !lhs.METHOD(static_cast<M>(rhs));                      \
+  }
 
-OVERLOAD_INPLACE_OPERATOR(IsModular, +=, add)
-OVERLOAD_INPLACE_OPERATOR(IsModular, -=, subtract)
-OVERLOAD_INPLACE_OPERATOR(IsModular, *=, multiply)
+OVERLOAD_ARITHMETIC_OPERATOR(modular_internal::IsModular, +, add)
+OVERLOAD_ARITHMETIC_OPERATOR(modular_internal::IsModular, -, subtract)
+OVERLOAD_ARITHMETIC_OPERATOR(modular_internal::IsModular, *, multiply)
+
+OVERLOAD_INPLACE_OPERATOR(modular_internal::IsModular, +=, add)
+OVERLOAD_INPLACE_OPERATOR(modular_internal::IsModular, -=, subtract)
+OVERLOAD_INPLACE_OPERATOR(modular_internal::IsModular, *=, multiply)
+
+OVERLOAD_COMPARISON_OPERATOR(modular_internal::IsModular, ==, !=, equal)
 
 #undef OVERLOAD_ARITHMETIC_OPERATOR
-#undef OVERLOAD_UNPLACE_OPERATOR
+#undef OVERLOAD_INPLACE_OPERATOR
+#undef OVERLOAD_COMPARISON_OPERATOR
 
 }  // namespace number_theory
 

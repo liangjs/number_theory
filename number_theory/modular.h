@@ -126,10 +126,10 @@ struct IsModularImpl {
   static constexpr bool result = decltype(test(std::declval<T *>()))::value;
 };
 
-template <class T>
-concept IsModular = IsModularImpl<T>::result;
-
 }  // namespace modular_internal
+
+template <class T>
+concept IsModular = modular_internal::IsModularImpl<T>::result;
 
 // Overloads an arithmetic operator with a class method
 #define OVERLOAD_ARITHMETIC_OPERATOR(CONCEPT, OP, METHOD) \
@@ -188,21 +188,21 @@ concept IsModular = IsModularImpl<T>::result;
     return old;                                        \
   }
 
-OVERLOAD_ARITHMETIC_OPERATOR(modular_internal::IsModular, +, add)
-OVERLOAD_ARITHMETIC_OPERATOR(modular_internal::IsModular, -, subtract)
-OVERLOAD_ARITHMETIC_OPERATOR(modular_internal::IsModular, *, multiply)
+OVERLOAD_ARITHMETIC_OPERATOR(IsModular, +, add)
+OVERLOAD_ARITHMETIC_OPERATOR(IsModular, -, subtract)
+OVERLOAD_ARITHMETIC_OPERATOR(IsModular, *, multiply)
 
-OVERLOAD_INPLACE_OPERATOR(modular_internal::IsModular, +=, add)
-OVERLOAD_INPLACE_OPERATOR(modular_internal::IsModular, -=, subtract)
-OVERLOAD_INPLACE_OPERATOR(modular_internal::IsModular, *=, multiply)
+OVERLOAD_INPLACE_OPERATOR(IsModular, +=, add)
+OVERLOAD_INPLACE_OPERATOR(IsModular, -=, subtract)
+OVERLOAD_INPLACE_OPERATOR(IsModular, *=, multiply)
 
-OVERLOAD_COMPARISON_OPERATOR(modular_internal::IsModular, ==, !=, equal)
+OVERLOAD_COMPARISON_OPERATOR(IsModular, ==, !=, equal)
 
-OVERLOAD_UNARY_OPERRATOR(modular_internal::IsModular, -, negate)
-OVERLOAD_UNARY_OPERRATOR(modular_internal::IsModular, +, get)
+OVERLOAD_UNARY_OPERRATOR(IsModular, -, negate)
+OVERLOAD_UNARY_OPERRATOR(IsModular, +, get)
 
-OVERLOAD_INCDEC_OPERRATOR(modular_internal::IsModular, ++, add)
-OVERLOAD_INCDEC_OPERRATOR(modular_internal::IsModular, --, subtract)
+OVERLOAD_INCDEC_OPERRATOR(IsModular, ++, add)
+OVERLOAD_INCDEC_OPERRATOR(IsModular, --, subtract)
 
 #undef OVERLOAD_ARITHMETIC_OPERATOR
 #undef OVERLOAD_INPLACE_OPERATOR

@@ -115,10 +115,31 @@ void test_modular_operators() {
   EXPECT_NE(1, Mod10(3));
   EXPECT_NE(Mod10(3), 1);
   EXPECT_NE(Mod10(1), Mod10(3));
+
+  // test unary operators
+  a = 7;
+  EXPECT_EQ(+a, 7);
+  EXPECT_EQ(-a, 3);
+
+  // test increment/decrement
+  a = 9;
+  EXPECT_EQ(a++, 9);
+  EXPECT_EQ(a, 0);
+  EXPECT_EQ(++a, 1);
+  EXPECT_EQ(a, 1);
+  EXPECT_EQ(a--, 1);
+  EXPECT_EQ(a, 0);
+  EXPECT_EQ(--a, 9);
+  EXPECT_EQ(a, 9);
 }
 
 TEST(ModularTest, Operators) {
   test_modular_operators<int16_t>();
+  test_modular_operators<int32_t>();
+  test_modular_operators<int64_t>();
+  test_modular_operators<uint16_t>();
+  test_modular_operators<uint32_t>();
+  test_modular_operators<uint64_t>();
 }
 
 }  // namespace number_theory

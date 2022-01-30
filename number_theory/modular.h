@@ -154,7 +154,7 @@ concept IsModular = IsModularImpl<T>::result;
     return lhs;                                        \
   }
 
-// Overloads a comparison operator with a class method
+// Overloads a pair of comparison operator with a class method
 #define OVERLOAD_COMPARISON_OPERATOR(CONCEPT, OP, OP_NEG, METHOD) \
   template <CONCEPT M, std::convertible_to<M> T>                  \
   bool operator OP(M &lhs, const T &rhs) {                        \
@@ -163,6 +163,29 @@ concept IsModular = IsModularImpl<T>::result;
   template <CONCEPT M, std::convertible_to<M> T>                  \
   bool operator OP_NEG(M &lhs, const T &rhs) {                    \
     return !lhs.METHOD(static_cast<M>(rhs));                      \
+  }
+
+// Overloads an unary operator with a class method
+#define OVERLOAD_UNARY_OPERRATOR(CONCEPT, OP, METHOD) \
+  template <CONCEPT M>                                \
+  M operator OP(const M &x) {                         \
+    return x.METHOD();                                \
+  }
+
+// Overload an increment/decrement operator with a class method
+#define OVERLOAD_INCDEC_OPERRATOR(CONCEPT, OP, METHOD) \
+  /* prefix */                                         \
+  template <CONCEPT M>                                 \
+  M &operator OP(M &x) {                               \
+    x = x.METHOD(M(1));                                \
+    return x;                                          \
+  }                                                    \
+  /* postfix */                                        \
+  template <CONCEPT M>                                 \
+  M operator OP(M &x, int) {                           \
+    M old = x;                                         \
+    x = x.METHOD(M(1));                                \
+    return old;                                        \
   }
 
 OVERLOAD_ARITHMETIC_OPERATOR(modular_internal::IsModular, +, add)
@@ -175,9 +198,17 @@ OVERLOAD_INPLACE_OPERATOR(modular_internal::IsModular, *=, multiply)
 
 OVERLOAD_COMPARISON_OPERATOR(modular_internal::IsModular, ==, !=, equal)
 
+OVERLOAD_UNARY_OPERRATOR(modular_internal::IsModular, -, negate)
+OVERLOAD_UNARY_OPERRATOR(modular_internal::IsModular, +, get)
+
+OVERLOAD_INCDEC_OPERRATOR(modular_internal::IsModular, ++, add)
+OVERLOAD_INCDEC_OPERRATOR(modular_internal::IsModular, --, subtract)
+
 #undef OVERLOAD_ARITHMETIC_OPERATOR
 #undef OVERLOAD_INPLACE_OPERATOR
 #undef OVERLOAD_COMPARISON_OPERATOR
+#undef OVERLOAD_UNARY_OPERRATOR
+#undef OVERLOAD_INCDEC_OPERRATOR
 
 }  // namespace number_theory
 

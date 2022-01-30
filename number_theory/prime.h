@@ -13,7 +13,7 @@ namespace number_theory {
 //
 // This overload is only available for numbers smaller than 2^16 since it
 // performs poorly for large numbers.
-template <class T,
+template <typename T,
           std::enable_if_t<std::numeric_limits<T>::is_integer &&
                                std::numeric_limits<T>::digits <= 16,
                            bool> = true>

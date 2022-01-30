@@ -15,7 +15,7 @@ namespace number_theory {
 // For each bit of |binary|, from lower to higher, it applies |operation| to
 // accumulate the values. The initial value is |initial_value|.
 // As an example, when |operation| is addition, it becomes a popcount.
-template <class T, class U>
+template <typename T, typename U>
 U binary_accumulate(T binary,
                     const U &initial_value,
                     std::function<void(bool, U &)> operation) {
@@ -36,7 +36,7 @@ U binary_accumulate(T binary,
 // If x = 0, sign(x) = 0.
 // If x > 0, sign(x) = 1.
 // If x < 0, sign(x) = -1.
-template <class T>
+template <typename T>
 constexpr int sign(T x) {
   if (x == 0)
     return 0;
@@ -47,7 +47,7 @@ constexpr int sign(T x) {
 //
 // This can be useful because std::abs doesn't support unsigned integers, and
 // std::abs(std::numeric_limits<T>::min()) is undefined.
-template <class T>
+template <typename T>
 constexpr std::make_unsigned_t<T> unsigned_abs(T x) {
   static_assert(std::numeric_limits<T>::is_integer,
                 "unsigned_abs argument |x| must be an integer.");

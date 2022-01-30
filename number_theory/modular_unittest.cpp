@@ -10,7 +10,7 @@
 namespace tql {
 namespace number_theory {
 
-template <class T>
+template <typename T>
 void test_modular_basic() {
   using Mod10 = Modular<T(10)>;
   static_assert(std::is_same<typename Mod10::type, T>::value);

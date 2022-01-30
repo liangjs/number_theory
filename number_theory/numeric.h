@@ -21,7 +21,7 @@ using std::lcm;
 // Extended Euclidean algorithm.
 // Given two numbers |a| and |b|, returns a pair (x, y) satisfying
 // x*a + y*b == gcd(a,b).
-template <class T>
+template <typename T>
 std::pair<T, T> exgcd(T a, T b) {
   static_assert(
       std::numeric_limits<T>::is_integer && std::numeric_limits<T>::is_signed,
@@ -52,8 +52,8 @@ std::pair<T, T> exgcd(T a, T b) {
 // Computes the value of |base| raised to an integer power |exponent|.
 // This version of overload uses binary exponentiation technique to compute in
 // O(log |exponent|) time.
-template <class T,
-          class U,
+template <typename T,
+          typename U,
           std::enable_if_t<std::numeric_limits<U>::is_integer, bool> = true>
 T pow(const T &base, U exponent) {
   using Pair_TT = std::pair<T, T>;
@@ -81,8 +81,8 @@ T pow(const T &base, U exponent) {
 
 // Computes the value of |base| raised to a non-integer power |exponent|.
 // This version of overload is the same as std::pow.
-template <class T,
-          class U,
+template <typename T,
+          typename U,
           std::enable_if_t<!std::numeric_limits<U>::is_integer, bool> = true>
 auto pow(T base, U exponent) -> decltype(std::pow(base, exponent)) {
   return std::pow(base, exponent);

@@ -12,7 +12,7 @@
 namespace tql {
 namespace number_theory {
 
-template <class T>
+template <typename T>
 void test_exgcd(T a, T b) {
   auto [x, y] = exgcd(a, b);
   if (a != 0 && b != 0) {

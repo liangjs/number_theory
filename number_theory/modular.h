@@ -15,12 +15,12 @@
 namespace tql {
 namespace number_theory {
 
-namespace {
+namespace modular_internal {
 
 // Returns the equivalent element of |x| in the ring of integers modulo
 // |modulus|. The result |y| should statisfy 0 <= y < modulus, and
 // y = k*modulus + x for some integer k.
-template <class T,
+template <typename T,
           std::enable_if_t<std::numeric_limits<T>::is_integer, bool> = true>
 constexpr T normalize(T x, T modulus) {
   T y = std::move(x);
@@ -32,16 +32,16 @@ constexpr T normalize(T x, T modulus) {
   return y;
 }
 
-template <class T>
+template <typename T>
 struct ModulusWrapper {
   using type = T;
   T value;
   constexpr ModulusWrapper(T x) : value(std::move(x)) {}
 };
 
-}  // namespace
+}  // namespace modular_internal
 
-template <ModulusWrapper mod>
+template <modular_internal::ModulusWrapper mod>
 class Modular {
  public:
   using type = std::decay_t<typename decltype(mod)::type>;
@@ -65,7 +65,9 @@ class Modular {
 
   const type &get() const { return value_; }
 
-  void set(type value) { value_ = normalize(std::move(value), modulus); }
+  void set(type value) {
+    value_ = modular_internal::normalize(std::move(value), modulus);
+  }
 
   Modular add(const Modular &rhs) const {
     check_addition_overflow();

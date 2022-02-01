@@ -131,7 +131,7 @@ struct IsModularImpl {
 template <class T>
 concept IsModular = modular_internal::IsModularImpl<T>::result;
 
-// Overloads an arithmetic operator with a class method
+// Overloads an arithmetic operator with a class method.
 #define OVERLOAD_ARITHMETIC_OPERATOR(CONCEPT, OP, METHOD) \
   template <CONCEPT M>                                    \
   M operator OP(const M &lhs, const M &rhs) {             \
@@ -146,7 +146,7 @@ concept IsModular = modular_internal::IsModularImpl<T>::result;
     return static_cast<M>(lhs).METHOD(rhs);               \
   }
 
-// Overloads an inplace operator with a class method
+// Overloads an inplace operator with a class method.
 #define OVERLOAD_INPLACE_OPERATOR(CONCEPT, OP, METHOD) \
   template <CONCEPT M, std::convertible_to<M> T>       \
   M &operator OP(M &lhs, const T &rhs) {               \
@@ -154,7 +154,7 @@ concept IsModular = modular_internal::IsModularImpl<T>::result;
     return lhs;                                        \
   }
 
-// Overloads a pair of comparison operator with a class method
+// Overloads a pair of comparison operator with a class method.
 #define OVERLOAD_COMPARISON_OPERATOR(CONCEPT, OP, OP_NEG, METHOD) \
   template <CONCEPT M, std::convertible_to<M> T>                  \
   bool operator OP(M &lhs, const T &rhs) {                        \
@@ -165,14 +165,14 @@ concept IsModular = modular_internal::IsModularImpl<T>::result;
     return !lhs.METHOD(static_cast<M>(rhs));                      \
   }
 
-// Overloads an unary operator with a class method
+// Overloads an unary operator with a class method.
 #define OVERLOAD_UNARY_OPERRATOR(CONCEPT, OP, METHOD) \
   template <CONCEPT M>                                \
   M operator OP(const M &x) {                         \
     return x.METHOD();                                \
   }
 
-// Overload an increment/decrement operator with a class method
+// Overload an increment/decrement operator with a class method.
 #define OVERLOAD_INCDEC_OPERRATOR(CONCEPT, OP, METHOD) \
   /* prefix */                                         \
   template <CONCEPT M>                                 \

@@ -63,6 +63,9 @@ class Sieve {
   Sieve &operator=(const Sieve &other) = default;
   Sieve &operator=(Sieve &&other) = default;
 
+  // Returns the maximum number (exclusive) we can hold.
+  const T &get_limit() const { return num_limit_; }
+
   // Returns the list of primes.
   const std::vector<T> &primes() const { return primes_; }
 

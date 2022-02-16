@@ -8,8 +8,7 @@
 
 #include "number_theory/sieve.h"
 
-namespace tql {
-namespace number_theory {
+namespace tql::number_theory {
 
 template <typename T>
 void test_sieve_primes() {

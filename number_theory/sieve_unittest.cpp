@@ -57,5 +57,4 @@ TEST(SieveTest, MinPrimeFactor) {
   test_min_prime_factor<uint64_t>();
 }
 
-}  // namespace number_theory
-}  // namespace tql
+}  // namespace tql::number_theory

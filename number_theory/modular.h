@@ -37,20 +37,6 @@ constexpr T normalize(T x, T modulus) {
   return y;
 }
 
-// Casts |number| to given type and returns the result.
-// Throws range_error exception if the conversion does overflow/underflow.
-template <typename T, typename U>
-constexpr T numeric_cast(U number) {
-  static_assert(
-      std::numeric_limits<T>::is_integer && std::numeric_limits<U>::is_integer,
-      "numeric_cast can be done only between integer types.");
-  if (!std::in_range<T>(number)) {
-    throw std::range_error(
-        "Failed to numeric_cast without overflow/underflow.");
-  }
-  return static_cast<T>(number);
-}
-
 // Wrapper of a modulus of type T.
 // This is a helper class that wraps the template arguments for the Modular
 // class, so that we can pass a single constant to the Modular template without
@@ -71,8 +57,8 @@ T inverse_mod(const T &number, const T &modulus) {
   static_assert(std::numeric_limits<T>::is_integer,
                 "inverse_mod arguments must be integers.");
   using Signed_T = std::make_signed_t<T>;
-  Signed_T num = modular_internal::numeric_cast<Signed_T>(number);
-  Signed_T mod = modular_internal::numeric_cast<Signed_T>(modulus);
+  Signed_T num = numeric_cast<Signed_T>(number);
+  Signed_T mod = numeric_cast<Signed_T>(modulus);
   if (mod <= 0)
     throw std::invalid_argument("The modulus must be positive.");
   auto [x, y] = exgcd(num, mod);

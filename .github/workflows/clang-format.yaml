@@ -1,4 +1,4 @@
-name: clang-format-lint
+name: clang-format
 
 on: [pull_request]
 
@@ -10,4 +10,4 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run clang-format style check.
-        uses: jidicula/clang-format-action@v4.5.0
+        uses: jidicula/clang-format-action@v4.6.0

@@ -24,30 +24,43 @@ void test_exgcd(T a, T b) {
 }
 
 TEST(NumericTest, ExGCD) {
+  // test small numbers
   for (int a = -10; a <= 100; ++a)
     for (int b = -100; b <= 10; ++b) {
       test_exgcd<int8_t>(a, b);
       test_exgcd<int16_t>(a, b);
       test_exgcd<int32_t>(a, b);
       test_exgcd<int64_t>(a, b);
+      if (a >= 0 && b >= 0) {
+        test_exgcd<uint8_t>(a, b);
+        test_exgcd<uint16_t>(a, b);
+        test_exgcd<uint32_t>(a, b);
+        test_exgcd<uint64_t>(a, b);
+      }
     }
+
   // test large numbers
   std::default_random_engine rand_engine(
       testing::UnitTest::GetInstance()->random_seed());
   std::uniform_int_distribution<int64_t> rand_gen(
-      std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
+      std::numeric_limits<int64_t>::min() + 1,
+      std::numeric_limits<int64_t>::max());
   for (int i = 0; i < 1000; ++i) {
     int64_t a = rand_gen(rand_engine);
     int64_t b = rand_gen(rand_engine);
-    test_exgcd(a, b);
+    test_exgcd<int64_t>(a, b);
+    test_exgcd<uint64_t>(a, b);
   }
+
   // test overflow
-  test_exgcd(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-  test_exgcd(std::numeric_limits<int>::max(), std::numeric_limits<int>::min());
+  test_exgcd(std::numeric_limits<int>::min() + 1,
+             std::numeric_limits<int>::max());
+  test_exgcd(std::numeric_limits<int>::max(),
+             std::numeric_limits<int>::min() + 1);
   test_exgcd(std::numeric_limits<int>::max(), 1);
-  test_exgcd(std::numeric_limits<int>::min(), 1);
+  test_exgcd(std::numeric_limits<int>::min() + 1, 1);
   test_exgcd(1, std::numeric_limits<int>::max());
-  test_exgcd(1, std::numeric_limits<int>::min());
+  test_exgcd(1, std::numeric_limits<int>::min() + 1);
 }
 
 TEST(NumericTest, Pow) {

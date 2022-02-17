@@ -22,24 +22,28 @@ using std::lcm;
 // Given two numbers |a| and |b|, returns a pair (x, y) satisfying
 // x*a + y*b == gcd(a,b).
 template <typename T>
-constexpr std::pair<T, T> exgcd(const T &a, const T &b) {
-  static_assert(
-      std::numeric_limits<T>::is_integer && std::numeric_limits<T>::is_signed,
-      "exgcd arguments must be signed integers");
+constexpr std::pair<std::make_signed_t<T>, std::make_signed_t<T>> exgcd(
+    const T &a,
+    const T &b) {
+  static_assert(std::numeric_limits<T>::is_integer,
+                "exgcd arguments must be integers");
+
+  using Signed_T = std::make_signed_t<T>;
+  using Unsigned_T = std::make_unsigned_t<T>;
 
   // xa * abs(a) + ya * abs(b) == ta
   // xb * abs(b) + yb * abs(b) == tb
-  auto ta = unsigned_abs(a), tb = unsigned_abs(b);
-  T xa = 1, ya = 0;
-  T xb = 0, yb = 1;
+  Unsigned_T ta = unsigned_abs(a), tb = unsigned_abs(b);
+  Signed_T xa = 1, ya = 0;
+  Signed_T xb = 0, yb = 1;
 
   while (tb != 0) {
-    T q = ta / tb;
+    Signed_T q = numeric_cast<Signed_T>(ta / tb);
 
     // xc * abs(a) + yc * abs(b) == tc
-    T tc = ta - q * tb;
-    T xc = xa - q * xb;
-    T yc = ya - q * yb;
+    Unsigned_T tc = ta - static_cast<Unsigned_T>(q) * tb;
+    Signed_T xc = xa - q * xb;
+    Signed_T yc = ya - q * yb;
 
     xa = xb, xb = xc;
     ya = yb, yb = yc;
